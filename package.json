@@ -1,0 +1,73 @@
+{
+  "name": "tastatur",
+  "version": "0.0.1",
+  "description": "input and keyboard handling in javascript",
+  "main": "dist/lib/index.js",
+  "module": "dist/esm/lib/index.js",
+  "types": "dist/esm/lib/index.d.ts",
+  "files": [
+    "dist",
+    "lib"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "scripts": {
+    "start": "npm run build",
+    "linter": "tslint --project ./tsconfig.json",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc --sourceMap --module commonjs --outDir dist",
+    "build:esm": "tsc --sourceMap --module es2015 --outDir dist/esm",
+    "pretest": "npm run build",
+    "test": "jest",
+    "prerelease": "git checkout master && git pull origin master && npm test && npm run build",
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags origin master && npm publish",
+    "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "build:watch": "npm run build:cjs -- --watch"
+  },
+  "author": {
+    "name": "Markus Wolf",
+    "email": "knister.peter@shadowrun-clan.de"
+  },
+  "repository": {
+    "type": "git",
+    "url": "KnisterPeter/tastatur"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@knisterpeter/standard-tslint": "1.6.0",
+    "@types/jest": "^22.2.3",
+    "coveralls": "3.0.0",
+    "jest": "22.4.3",
+    "rimraf": "2.6.2",
+    "standard-version": "4.3.0",
+    "ts-jest": "22.4.4",
+    "tslint": "5.9.1",
+    "typescript": "2.8.3"
+  },
+  "dependencies": {
+    "tslib": "1.9.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}
