@@ -31,7 +31,19 @@ describe('keyboard', () => {
 
       expect(reactedToKey).to.be.true;
     });
-  });
+
+    it('should ignore unbound keys', () => {
+      let reactedToKey = false;
+
+      bind('a', () => {
+        reactedToKey = true;
+      });
+      document.dispatchEvent(new dom.window.KeyboardEvent('keydown', {
+        code: 'KeyB'
+      }));
+
+      expect(reactedToKey).to.be.false;
+    });  });
   describe('when uninstalled', () => {
     it('should not respond to bound keys', () => {
       let reactedToKey = false;
