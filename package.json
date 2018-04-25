@@ -21,11 +21,12 @@
     "build:cjs": "tsc --sourceMap --module commonjs --outDir dist",
     "build:esm": "tsc --sourceMap --module es2015 --outDir dist/esm",
     "pretest": "npm run build",
-    "test": "jest",
+    "test": "nyc mocha -r source-map-support/register dist/tests/",
     "prerelease": "git checkout master && git pull origin master && npm test && npm run build",
     "release": "standard-version",
     "postrelease": "git push --follow-tags origin master && npm publish",
-    "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "precoverage": "npm run clean && tsc --inlineSourceMap --module commonjs --outDir dist",
+    "coverage": "nyc report --reporter=lcov && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "build:watch": "npm run build:cjs -- --watch"
   },
   "author": {
@@ -39,10 +40,15 @@
   "license": "MIT",
   "devDependencies": {
     "@knisterpeter/standard-tslint": "1.6.0",
-    "@types/jest": "22.2.3",
+    "@types/chai": "4.1.2",
+    "@types/mocha": "5.2.0",
+    "chai": "4.1.2",
     "coveralls": "3.0.0",
     "jest": "22.4.3",
+    "mocha": "5.1.1",
+    "nyc": "11.7.1",
     "rimraf": "2.6.2",
+    "source-map-support": "0.5.4",
     "standard-version": "4.3.0",
     "ts-jest": "22.4.4",
     "tslint": "5.9.1",
@@ -51,23 +57,11 @@
   "dependencies": {
     "tslib": "1.9.0"
   },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/dist/"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true
+  "nyc": {
+    "exclude": [
+      "node_modules",
+      "coverage",
+      "dist/tests"
+    ]
   }
 }
