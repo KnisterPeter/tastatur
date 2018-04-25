@@ -31,9 +31,11 @@ describe('Tastatur', () => {
       tastatur.bind('a', () => {
         reactedToKey = true;
       });
-      document.dispatchEvent(new dom.window.KeyboardEvent('keydown', {
-        code: 'KeyA'
-      }));
+      document.dispatchEvent(
+        new dom.window.KeyboardEvent('keydown', {
+          code: 'KeyA'
+        })
+      );
 
       expect(reactedToKey).to.be.true;
     });
@@ -44,12 +46,63 @@ describe('Tastatur', () => {
       tastatur.bind('a', () => {
         reactedToKey = true;
       });
-      document.dispatchEvent(new dom.window.KeyboardEvent('keydown', {
-        code: 'KeyB'
-      }));
+      document.dispatchEvent(
+        new dom.window.KeyboardEvent('keydown', {
+          code: 'KeyB'
+        })
+      );
 
       expect(reactedToKey).to.be.false;
-    });  });
+    });
+
+    describe('and bind combinations', () => {
+      it('should respond to it', () => {
+        let reactedToKey = false;
+
+        tastatur.bind('a+b', () => {
+          reactedToKey = true;
+        });
+        document.dispatchEvent(
+          new dom.window.KeyboardEvent('keydown', {
+            code: 'KeyA'
+          })
+        );
+        document.dispatchEvent(
+          new dom.window.KeyboardEvent('keydown', {
+            code: 'KeyB'
+          })
+        );
+
+        expect(reactedToKey).to.be.true;
+      });
+
+      it('should handle keyup state', () => {
+        let reactedToKey = false;
+
+        tastatur.bind('a+b', () => {
+          reactedToKey = true;
+        });
+        document.dispatchEvent(
+          new dom.window.KeyboardEvent('keydown', {
+            code: 'KeyA'
+          })
+        );
+        document.dispatchEvent(
+          new dom.window.KeyboardEvent('keyup', {
+            code: 'KeyA'
+          })
+        );
+        document.dispatchEvent(
+          new dom.window.KeyboardEvent('keydown', {
+            code: 'KeyB'
+          })
+        );
+
+        expect(reactedToKey).to.be.false;
+      });
+    });
+  });
+
   describe('when uninstalled', () => {
     it('should not respond to bound keys', () => {
       let reactedToKey = false;
