@@ -1,0 +1,14 @@
+<html>
+<body>
+  <script type="text/javascript">
+    exports = {};
+  </script>
+  <script src="../dist/lib/index.js"></script>
+  <script type="text/javascript">
+    exports.install();
+    exports.bind('a', e => {
+      console.log('a =>', e);
+    });
+  </script>
+</body>
+</html>
