@@ -5,8 +5,9 @@
   </script>
   <script src="../dist/lib/index.js"></script>
   <script type="text/javascript">
-    exports.install();
-    exports.bind('a', e => {
+    const tastatur = new exports.Tastatur();
+    tastatur.install();
+    tastatur.bind('a', e => {
       console.log('a =>', e);
     });
   </script>

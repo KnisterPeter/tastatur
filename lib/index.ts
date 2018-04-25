@@ -3,27 +3,35 @@ interface Registration {
   fn(e: KeyboardEvent): void;
 }
 
-const registrations: Registration[] = [];
+export class Tastatur {
+  private registrations: Registration[] = [];
 
-function handleKey(e: KeyboardEvent): void {
-  const registration = registrations.find(registration => registration.keys === e.code);
-  if (registration) {
-    registration.fn(e);
+  constructor() {
+    this.handleKey = this.handleKey.bind(this);
   }
-}
 
-export function install(el = document): void {
-  el.addEventListener('keydown', handleKey);
-  el.addEventListener('keypress', handleKey);
-  el.addEventListener('keyup', handleKey);
-}
+  public install(el = document): void {
+    el.addEventListener('keydown', this.handleKey);
+    el.addEventListener('keypress', this.handleKey);
+    el.addEventListener('keyup', this.handleKey);
+  }
 
-export function uninstall(el = document): void {
-  el.removeEventListener('keydown', handleKey);
-  el.removeEventListener('keypress', handleKey);
-  el.removeEventListener('keyup', handleKey);
-}
+  public uninstall(el = document): void {
+    el.removeEventListener('keydown', this.handleKey);
+    el.removeEventListener('keypress', this.handleKey);
+    el.removeEventListener('keyup', this.handleKey);
+  }
 
-export function bind(keys: string, fn: (e: KeyboardEvent) => void): void {
-  registrations.push({keys: `Key${keys.toUpperCase()}`, fn});
+  public bind(keys: string, fn: (e: KeyboardEvent) => void): void {
+    this.registrations.push({ keys: `Key${keys.toUpperCase()}`, fn });
+  }
+
+  public handleKey(e: KeyboardEvent): void {
+    const registration = this.registrations.find(
+      registration => registration.keys === e.code
+    );
+    if (registration) {
+      registration.fn(e);
+    }
+  }
 }
