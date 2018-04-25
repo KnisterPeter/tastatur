@@ -2,9 +2,11 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    // "lib": [],
+    "lib": [
+      "dom",
+      "esnext"
+    ],
     "declaration": true,
-    "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./",
     "importHelpers": true,
