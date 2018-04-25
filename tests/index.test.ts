@@ -2,9 +2,15 @@
 import { expect } from 'chai';
 import { JSDOM } from 'jsdom';
 
-import { install, bind, uninstall } from '../lib/index';
+import { Tastatur } from '../lib/index';
 
-describe('keyboard', () => {
+describe('Tastatur', () => {
+  let tastatur!: Tastatur;
+
+  beforeEach(() => {
+    tastatur = new Tastatur();
+  });
+
   describe('when installed', () => {
     let dom!: JSDOM;
     let document!: Document;
@@ -12,17 +18,17 @@ describe('keyboard', () => {
     beforeEach(() => {
       dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
       document = dom.window.document;
-      install(document);
+      tastatur.install(document);
     });
 
     afterEach(() => {
-      uninstall(document);
+      tastatur.uninstall(document);
     });
 
     it('should respond to bound keys', () => {
       let reactedToKey = false;
 
-      bind('a', () => {
+      tastatur.bind('a', () => {
         reactedToKey = true;
       });
       document.dispatchEvent(new dom.window.KeyboardEvent('keydown', {
@@ -35,7 +41,7 @@ describe('keyboard', () => {
     it('should ignore unbound keys', () => {
       let reactedToKey = false;
 
-      bind('a', () => {
+      tastatur.bind('a', () => {
         reactedToKey = true;
       });
       document.dispatchEvent(new dom.window.KeyboardEvent('keydown', {
@@ -47,7 +53,7 @@ describe('keyboard', () => {
   describe('when uninstalled', () => {
     it('should not respond to bound keys', () => {
       let reactedToKey = false;
-      bind('a', e => {
+      tastatur.bind('a', e => {
         console.log(e);
         reactedToKey = true;
       });
