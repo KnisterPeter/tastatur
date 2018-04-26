@@ -4,6 +4,94 @@ interface Registration {
   fn(e: KeyboardEvent): void;
 }
 
+// tslint:disable:object-literal-key-quotes
+export const KeyMap = {
+  'ctrlleft': 'ControlLeft',
+  'ctrlright': 'ControlRight',
+  'shiftleft': 'ShiftLeft',
+  'shiftright': 'ShiftRight',
+  'alt': 'AltLeft',
+  'altgr': 'AltRight',
+  'esc': 'Escape',
+  'capslock': 'CapsLock',
+  'tab': 'Tab',
+  'backquote': 'Backquote',
+  'minus': 'Minus',
+  'equal': 'Equal',
+  'bracketleft': 'BracketLeft',
+  'bracketrigth': 'BracketRigth',
+  'semicolon': 'Semicolon',
+  'quote': 'Quote',
+  'backslash': 'Backslash',
+  'comma': 'Comma',
+  'period': 'Period',
+  'slash': 'Slash',
+  'intlbackslash': 'IntlBackslash',
+  'scrolllock': 'ScrollLock',
+  'pause': 'Pause',
+  'insert': 'Insert',
+  'home': 'Home',
+  'pageup': 'PageUp',
+  'delete': 'Delete',
+  'end': 'End',
+  'pagedown': 'PageDown',
+  'arrowleft': 'ArrowLeft',
+  'arrowup': 'ArrowUp',
+  'arrowright': 'ArrowRight',
+  'arrowdown': 'ArrowDown',
+  'browserback': 'BrowserBack',
+  'browserforward': 'BrowserForward',
+  'browserfavorites': 'BrowserFavorites',
+  'numlock': 'NumLock',
+  'numpaddivide': 'NumpadDivide',
+  'numpadmultiply': 'NumpadMultiply',
+  'numpadsubtract': 'NumpadSubtract',
+  'numpadadd': 'NumpadAdd',
+  'numpadenter': 'NumpadEnter',
+  'numpaddecimal': 'NumpadDecimal',
+  'f1': 'F1',
+  'f2': 'F2',
+  'f3': 'F3',
+  'f4': 'F4',
+  'f5': 'F5',
+  'f6': 'F6',
+  'f7': 'F7',
+  'f8': 'F8',
+  'f9': 'F9',
+  'f10': 'F10',
+  'f11': 'F11',
+  'f12': 'F12',
+  'f13': 'F13',
+  'f14': 'F14',
+  'f15': 'F15',
+  'f16': 'F16',
+  'f17': 'F17',
+  'f18': 'F18',
+  'f19': 'F19',
+  'f20': 'F20',
+  'digit1': 'Digit1',
+  'digit2': 'Digit2',
+  'digit3': 'Digit3',
+  'digit4': 'Digit4',
+  'digit5': 'Digit5',
+  'digit6': 'Digit6',
+  'digit7': 'Digit7',
+  'digit8': 'Digit8',
+  'digit9': 'Digit9',
+  'digit0': 'Digit0',
+  'numpad1': 'Numpad1',
+  'numpad2': 'Numpad2',
+  'numpad3': 'Numpad3',
+  'numpad4': 'Numpad4',
+  'numpad5': 'Numpad5',
+  'numpad6': 'Numpad6',
+  'numpad7': 'Numpad7',
+  'numpad8': 'Numpad8',
+  'numpad9': 'Numpad9',
+  'numpad0': 'Numpad0'
+};
+// tslint:enable:object-literal-key-quotes
+
 export class Tastatur {
   private registrations: Registration[] = [];
   private pressed: { [button: string]: boolean } = {};
@@ -38,66 +126,15 @@ export class Tastatur {
   }
 
   private mapKey(key: string): string | string[] {
+    if (key.toLowerCase() in KeyMap) {
+      return KeyMap[key.toLowerCase() as keyof typeof KeyMap];
+    }
     // tslint:disable-next-line:cyclomatic-complexity
     switch (key.toLowerCase()) {
-      case 'ctrlleft':
-        return 'ControlLeft';
-      case 'ctrlright':
-        return 'ControlRight';
       case 'ctrl':
-        return ['ControlLeft', 'ControlRight'];
-      case 'shiftleft':
-      case 'shiftright':
-        return key;
+        return [KeyMap.ctrlleft, KeyMap.ctrlright];
       case 'shift':
-        return ['ShiftLeft', 'ShiftRight'];
-      case 'alt':
-        return 'AltLeft';
-      case 'altgr':
-        return 'AltRight';
-      case 'esc':
-        return 'Escape';
-      case 'f1':
-      case 'f2':
-      case 'f3':
-      case 'f4':
-      case 'f5':
-      case 'f6':
-      case 'f7':
-      case 'f8':
-      case 'f9':
-      case 'f10':
-      case 'f11':
-      case 'f12':
-      case 'f13':
-      case 'f14':
-      case 'f15':
-      case 'f16':
-      case 'f17':
-      case 'f18':
-      case 'f19':
-      case 'f20':
-      case 'digit1':
-      case 'digit2':
-      case 'digit3':
-      case 'digit4':
-      case 'digit5':
-      case 'digit6':
-      case 'digit7':
-      case 'digit8':
-      case 'digit9':
-      case 'digit0':
-      case 'numpad1':
-      case 'numpad2':
-      case 'numpad3':
-      case 'numpad4':
-      case 'numpad5':
-      case 'numpad6':
-      case 'numpad7':
-      case 'numpad8':
-      case 'numpad9':
-      case 'numpad0':
-        return key;
+        return [KeyMap.shiftleft, KeyMap.shiftright];
       case '1':
       case '2':
       case '3':
