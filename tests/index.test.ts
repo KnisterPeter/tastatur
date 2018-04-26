@@ -125,6 +125,48 @@ describe('Tastatur', () => {
       testKey('F18', 'F18');
       testKey('F19', 'F19');
       testKey('F20', 'F20');
+
+      testKey('Digit1', 'Digit1');
+      testKey('Digit2', 'Digit2');
+      testKey('Digit3', 'Digit3');
+      testKey('Digit4', 'Digit4');
+      testKey('Digit5', 'Digit5');
+      testKey('Digit6', 'Digit6');
+      testKey('Digit7', 'Digit7');
+      testKey('Digit8', 'Digit8');
+      testKey('Digit9', 'Digit9');
+      testKey('Digit0', 'Digit0');
+      testKey('Numpad1', 'Numpad1');
+      testKey('Numpad2', 'Numpad2');
+      testKey('Numpad3', 'Numpad3');
+      testKey('Numpad4', 'Numpad4');
+      testKey('Numpad5', 'Numpad5');
+      testKey('Numpad6', 'Numpad6');
+      testKey('Numpad7', 'Numpad7');
+      testKey('Numpad8', 'Numpad8');
+      testKey('Numpad9', 'Numpad9');
+      testKey('Numpad0', 'Numpad0');
+
+      testKey('1', 'Digit1');
+      testKey('2', 'Digit2');
+      testKey('3', 'Digit3');
+      testKey('4', 'Digit4');
+      testKey('5', 'Digit5');
+      testKey('6', 'Digit6');
+      testKey('7', 'Digit7');
+      testKey('8', 'Digit8');
+      testKey('9', 'Digit9');
+      testKey('0', 'Digit0');
+      testKey('1', 'Numpad1');
+      testKey('2', 'Numpad2');
+      testKey('3', 'Numpad3');
+      testKey('4', 'Numpad4');
+      testKey('5', 'Numpad5');
+      testKey('6', 'Numpad6');
+      testKey('7', 'Numpad7');
+      testKey('8', 'Numpad8');
+      testKey('9', 'Numpad9');
+      testKey('0', 'Numpad0');
     });
 
     describe('and bind combinations', () => {

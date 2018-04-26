@@ -77,8 +77,39 @@ export class Tastatur {
       case 'f18':
       case 'f19':
       case 'f20':
+      case 'digit1':
+      case 'digit2':
+      case 'digit3':
+      case 'digit4':
+      case 'digit5':
+      case 'digit6':
+      case 'digit7':
+      case 'digit8':
+      case 'digit9':
+      case 'digit0':
+      case 'numpad1':
+      case 'numpad2':
+      case 'numpad3':
+      case 'numpad4':
+      case 'numpad5':
+      case 'numpad6':
+      case 'numpad7':
+      case 'numpad8':
+      case 'numpad9':
+      case 'numpad0':
         return key;
-    }
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '0':
+        return [`Digit${key}`, `Numpad${key}`];
+      }
     return `Key${key.toUpperCase()}`;
   }
 
