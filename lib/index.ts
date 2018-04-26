@@ -4,6 +4,9 @@ interface Registration {
   fn(e: KeyboardEvent): void;
 }
 
+/**
+ * Maps key binding names to keycodes.
+ */
 // tslint:disable:object-literal-key-quotes
 export const KeyMap = {
   'ctrlleft': 'ControlLeft',
@@ -88,15 +91,44 @@ export const KeyMap = {
   'numpad7': 'Numpad7',
   'numpad8': 'Numpad8',
   'numpad9': 'Numpad9',
-  'numpad0': 'Numpad0'
+  'numpad0': 'Numpad0',
+  'a': 'KeyA',
+  'b': 'KeyB',
+  'c': 'KeyC',
+  'd': 'KeyD',
+  'e': 'KeyE',
+  'f': 'KeyF',
+  'g': 'KeyG',
+  'h': 'KeyH',
+  'i': 'KeyI',
+  'j': 'KeyJ',
+  'k': 'KeyK',
+  'l': 'KeyL',
+  'm': 'KeyM',
+  'n': 'KeyN',
+  'o': 'KeyO',
+  'p': 'KeyP',
+  'q': 'KeyQ',
+  'r': 'KeyR',
+  's': 'KeyS',
+  't': 'KeyT',
+  'u': 'KeyU',
+  'v': 'KeyV',
+  'w': 'KeyW',
+  'x': 'KeyX',
+  'y': 'KeyY',
+  'z': 'KeyZ'
 };
 // tslint:enable:object-literal-key-quotes
 
 export class Tastatur {
   private registrations: Registration[] = [];
-  private pressed: { [button: string]: boolean } = {};
+  private pressed: { [key: string]: boolean } = {};
+  private keymap: typeof KeyMap;
 
-  constructor() {
+  constructor(keymap = KeyMap) {
+    this.keymap = keymap;
+
     this.handleKey = this.handleKey.bind(this);
   }
 
@@ -113,7 +145,7 @@ export class Tastatur {
   }
 
   public bind(binding: string, fn: (e: KeyboardEvent) => void): void {
-    const keys = binding.split('+').map(button => this.mapKey(button));
+    const keys = binding.split('+').map(button => this.mapKeyBinding(button));
     this.registrations.push({ binding, keys, fn });
   }
 
@@ -125,16 +157,16 @@ export class Tastatur {
     }
   }
 
-  private mapKey(key: string): string | string[] {
-    if (key.toLowerCase() in KeyMap) {
-      return KeyMap[key.toLowerCase() as keyof typeof KeyMap];
+  private mapKeyBinding(key: string): string | string[] {
+    if (key.toLowerCase() in this.keymap) {
+      return this.keymap[key.toLowerCase() as keyof typeof KeyMap];
     }
     // tslint:disable-next-line:cyclomatic-complexity
     switch (key.toLowerCase()) {
       case 'ctrl':
-        return [KeyMap.ctrlleft, KeyMap.ctrlright];
+        return [this.keymap.ctrlleft, this.keymap.ctrlright];
       case 'shift':
-        return [KeyMap.shiftleft, KeyMap.shiftright];
+        return [this.keymap.shiftleft, this.keymap.shiftright];
       case '1':
       case '2':
       case '3':
@@ -147,8 +179,12 @@ export class Tastatur {
       case '0':
         return [`Digit${key}`, `Numpad${key}`];
       }
-    return `Key${key.toUpperCase()}`;
+    throw new Error(`Unsupported key '${key}'`);
   }
+
+  // private mapKey(key: string): string {
+  //   return this.keymap ? this.keymap[key] || key : key;
+  // }
 
   public handleKey(e: KeyboardEvent): void {
     if (e.type === 'keydown') {

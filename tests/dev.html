@@ -1,13 +1,46 @@
 <html>
+<head>
+  <style type="text/css">
+    #container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-evenly;
+    }
+    #inspect {
+      height: 200px;
+      color: darkslateblue;
+      background-color: aquamarine;
+    }
+    #bindings {
+      height: 200px;
+      color: gainsboro;
+      background-color: darkslategrey;
+    }
+    #actual {
+      height: 200px;
+      overflow: auto;
+    }
+  </style>
+</head>
 <body>
-  <div id="inspect" style="width: 200px; height: 200px; color: darkslateblue; background-color: aquamarine;" tabindex="0">
-    Focus this to inspect any key
+  <div id="container">
+    <div id="inspect" tabindex="1">
+      Focus this to inspect any key
+    </div>
+    <div id="bindings" tabindex="2">
+      Focus this to inspect bindings:
+    </div>
+    <div id="actual"></div>
   </div>
   <script type="text/javascript">
     document.getElementById('inspect').addEventListener('keydown', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log(e.code);
+      if (e.code !== 'Tab') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      console.log(e.code, e);
     });
   </script>
   <script type="text/javascript">
@@ -15,19 +48,28 @@
   </script>
   <script src="../dist/lib/index.js"></script>
   <script type="text/javascript">
-    const tastatur = new exports.Tastatur();
-    tastatur.install();
-    tastatur.bind('a', e => {
-      console.log('a =>', e);
+    const bindings = [
+      'y',
+      'b+c',
+      'ctrl+y',
+      'shift+1'
+      ];
+
+    const actual = document.getElementById('actual');
+    const el = document.getElementById('bindings');
+    el.innerHTML += bindings.join('<br />')
+
+    const tastatur = new exports.Tastatur({
+      ...exports.KeyMap,
+      y: 'KeyZ',
+      z: 'KeyY',
     });
-    tastatur.bind('b+c', e => {
-      console.log('b+c =>', e);
-    });
-    tastatur.bind('ctrl+a', e => {
-      console.log('ctrl+a =>', e);
-    });
-    tastatur.bind('shift+1', e => {
-      console.log('! =>', e);
+    tastatur.install(el);
+    bindings.forEach(binding => {
+      tastatur.bind(binding, e => {
+        console.log(binding, e);
+        actual.innerHTML = 'Pressed: ' + binding + ' (' + e.type + ')' + '<br />' + actual.innerHTML;
+      });
     });
   </script>
 </body>
