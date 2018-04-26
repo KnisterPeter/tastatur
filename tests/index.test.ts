@@ -102,6 +102,29 @@ describe('Tastatur', () => {
 
       testKey('Alt', 'AltLeft');
       testKey('AltGr', 'AltRight');
+
+      testKey('Esc', 'Escape');
+
+      testKey('F1', 'F1');
+      testKey('F2', 'F2');
+      testKey('F3', 'F3');
+      testKey('F4', 'F4');
+      testKey('F5', 'F5');
+      testKey('F6', 'F6');
+      testKey('F7', 'F7');
+      testKey('F8', 'F8');
+      testKey('F9', 'F9');
+      testKey('F10', 'F10');
+      testKey('F11', 'F11');
+      testKey('F12', 'F12');
+      testKey('F13', 'F13');
+      testKey('F14', 'F14');
+      testKey('F15', 'F15');
+      testKey('F16', 'F16');
+      testKey('F17', 'F17');
+      testKey('F18', 'F18');
+      testKey('F19', 'F19');
+      testKey('F20', 'F20');
     });
 
     describe('and bind combinations', () => {

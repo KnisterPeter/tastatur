@@ -55,6 +55,29 @@ export class Tastatur {
         return 'AltLeft';
       case 'altgr':
         return 'AltRight';
+      case 'esc':
+        return 'Escape';
+      case 'f1':
+      case 'f2':
+      case 'f3':
+      case 'f4':
+      case 'f5':
+      case 'f6':
+      case 'f7':
+      case 'f8':
+      case 'f9':
+      case 'f10':
+      case 'f11':
+      case 'f12':
+      case 'f13':
+      case 'f14':
+      case 'f15':
+      case 'f16':
+      case 'f17':
+      case 'f18':
+      case 'f19':
+      case 'f20':
+        return key;
     }
     return `Key${key.toUpperCase()}`;
   }
