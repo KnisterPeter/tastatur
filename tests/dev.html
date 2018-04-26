@@ -1,5 +1,15 @@
 <html>
 <body>
+  <div id="inspect" style="width: 200px; height: 200px; color: darkslateblue; background-color: aquamarine;" tabindex="0">
+    Focus this to inspect any key
+  </div>
+  <script type="text/javascript">
+    document.getElementById('inspect').addEventListener('keydown', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log(e);
+    });
+  </script>
   <script type="text/javascript">
     exports = {};
   </script>
