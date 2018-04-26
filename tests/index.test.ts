@@ -2,13 +2,48 @@
 import { expect } from 'chai';
 import { JSDOM } from 'jsdom';
 
-import { Tastatur } from '../lib/index';
+import { Tastatur, KeyMap } from '../lib/index';
 
 describe('Tastatur', () => {
   let tastatur!: Tastatur;
 
   beforeEach(() => {
     tastatur = new Tastatur();
+  });
+
+  it('should throw for unknown key mappings', () => {
+    expect(
+      () => tastatur.bind('abc', () => {
+        //
+      }))
+      .to.throw("Unsupported key 'abc'");
+});
+
+  describe('with keyboard mapping', () => {
+    let dom!: JSDOM;
+    let document!: Document;
+
+    beforeEach(() => {
+      dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
+      document = dom.window.document;
+    });
+
+    it('should setup keymapping z -> y (e.g. en -> de)', () => {
+      let reactedToKey = false;
+
+      tastatur = new Tastatur(Object.assign({}, KeyMap, {z: 'KeyY'}));
+      tastatur.install(document);
+      tastatur.bind('z', () => {
+        reactedToKey = true;
+      });
+      document.dispatchEvent(
+        new dom.window.KeyboardEvent('keydown', {
+          code: 'KeyY'
+        })
+      );
+
+      expect(reactedToKey).to.be.true;
+    });
   });
 
   describe('when installed', () => {
@@ -281,8 +316,7 @@ describe('Tastatur', () => {
   describe('when uninstalled', () => {
     it('should not respond to bound keys', () => {
       let reactedToKey = false;
-      tastatur.bind('a', e => {
-        console.log(e);
+      tastatur.bind('a', () => {
         reactedToKey = true;
       });
 
