@@ -177,8 +177,12 @@ var Tastatur = /** @class */ (function () {
             return e.code;
         }
         // ie/edge quirks
+        var key = e.key.toLowerCase();
+        if (key in this.keymap) {
+            return this.keymap[key];
+        }
         // tslint:disable-next-line:cyclomatic-complexity
-        switch (e.key.toLowerCase()) {
+        switch (key) {
             case 'ctrl':
                 return this.keymap.ctrlleft;
             case 'shift':
