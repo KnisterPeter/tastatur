@@ -212,8 +212,7 @@ var Tastatur = /** @class */ (function () {
         else if (e.type === 'keyup') {
             this.pressed[this.mapKeyCode(e)] = false;
         }
-        console.log(e.type);
-        console.log(e);
+        console.log(e.type, e.key);
         var registration = this.registrations.find(function (registration) {
             var required = _this.areRequiredKeysPressed(registration);
             var keys = _this.requiredKeys(registration);
