@@ -184,9 +184,10 @@ var Tastatur = /** @class */ (function () {
         if (e.key.toLowerCase() in EdgeSpecialMap) {
             return EdgeSpecialMap[e.key.toLowerCase()];
         }
-        var key = String.fromCharCode(e.keyCode).toLowerCase();
-        if (key in this.keymap) {
-            return this.keymap[key];
+        var key = String.fromCharCode(e.keyCode);
+        var lkey = key.toLowerCase();
+        if (lkey in this.keymap) {
+            return this.keymap[lkey];
         }
         switch (key) {
             case '1':
@@ -199,7 +200,7 @@ var Tastatur = /** @class */ (function () {
             case '8':
             case '9':
             case '0':
-                return "Digit" + e.key;
+                return "Digit" + key;
         }
         throw new Error("Unsupported key '" + e.key + "'");
     };
