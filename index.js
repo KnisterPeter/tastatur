@@ -116,9 +116,9 @@ exports.KeyMap = {
     'z': 'KeyZ'
 };
 var EdgeSpecialMap = {
-    'control': 'ctrlleft',
-    'shift': 'shiftleft',
-    'alt': 'alt'
+    'control': 'CtrlLeft',
+    'shift': 'ShiftLeft',
+    'alt': 'Alt'
 };
 // tslint:enable:object-literal-key-quotes
 var Tastatur = /** @class */ (function () {
