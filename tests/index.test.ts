@@ -4,6 +4,28 @@ import { JSDOM } from 'jsdom';
 
 import { Tastatur, KeyMap } from '../lib/index';
 
+interface BrowserAccess {
+  window: Window;
+  document: Document;
+  KeyboardEvent: { new (typeArg: string, eventInitDict?: KeyboardEventInit): KeyboardEvent };
+}
+
+function createDOM(): BrowserAccess {
+  if (typeof window === 'undefined') {
+    const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
+    return {
+      window: dom.window,
+      document: dom.window.document,
+      KeyboardEvent: dom.window.KeyboardEvent
+    };
+  }
+  return {
+    window,
+    document: window.document,
+    KeyboardEvent
+  };
+}
+
 describe('Tastatur', () => {
   let tastatur!: Tastatur;
 
@@ -17,27 +39,25 @@ describe('Tastatur', () => {
         //
       }))
       .to.throw("Unsupported key 'abc'");
-});
+  });
 
   describe('with keyboard mapping', () => {
-    let dom!: JSDOM;
-    let document!: Document;
+    let dom!: BrowserAccess;
 
     beforeEach(() => {
-      dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
-      document = dom.window.document;
+      dom = createDOM();
     });
 
     it('should setup keymapping z -> y (e.g. en -> de)', () => {
       let reactedToKey = false;
 
       tastatur = new Tastatur(Object.assign({}, KeyMap, {z: 'KeyY'}));
-      tastatur.install(document);
+      tastatur.install(dom.document);
       tastatur.bind('z', () => {
         reactedToKey = true;
       });
-      document.dispatchEvent(
-        new dom.window.KeyboardEvent('keydown', {
+      dom.document.dispatchEvent(
+        new dom.KeyboardEvent('keydown', {
           code: 'KeyY'
         })
       );
@@ -47,8 +67,16 @@ describe('Tastatur', () => {
   });
 
   describe('when installed', () => {
-    let dom!: JSDOM;
-    let document!: Document;
+    let dom!: BrowserAccess;
+
+    beforeEach(() => {
+      dom = createDOM();
+      tastatur.install(dom.document);
+    });
+
+    afterEach(() => {
+      tastatur.uninstall(dom.document);
+    });
 
     function testKey(binding: string, code: string): void {
       try {
@@ -57,8 +85,8 @@ describe('Tastatur', () => {
         tastatur.bind(binding, () => {
           reactedToKey = true;
         });
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keydown', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keydown', {
             code
           })
         );
@@ -66,23 +94,13 @@ describe('Tastatur', () => {
         expect(reactedToKey, `Failed to handle ${binding} -> ${code}`).to.be.true;
       } finally {
         tastatur.unbind(binding);
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keyup', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keyup', {
             code
           })
         );
       }
     }
-
-    beforeEach(() => {
-      dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
-      document = dom.window.document;
-      tastatur.install(document);
-    });
-
-    afterEach(() => {
-      tastatur.uninstall(document);
-    });
 
     it('should respond to bound keys', () => {
       testKey('a', 'KeyA');
@@ -94,14 +112,14 @@ describe('Tastatur', () => {
       tastatur.bind('a', () => {
         reactedToKey++;
       });
-      document.dispatchEvent(
-        new dom.window.KeyboardEvent('keydown', {
+      dom.document.dispatchEvent(
+        new dom.KeyboardEvent('keydown', {
           code: 'KeyA'
         })
       );
       tastatur.unbind('a');
-      document.dispatchEvent(
-        new dom.window.KeyboardEvent('keydown', {
+      dom.document.dispatchEvent(
+        new dom.KeyboardEvent('keydown', {
           code: 'KeyA'
         })
       );
@@ -115,8 +133,8 @@ describe('Tastatur', () => {
       tastatur.bind('a', () => {
         reactedToKey = true;
       });
-      document.dispatchEvent(
-        new dom.window.KeyboardEvent('keydown', {
+      dom.document.dispatchEvent(
+        new dom.KeyboardEvent('keydown', {
           code: 'KeyB'
         })
       );
@@ -247,13 +265,13 @@ describe('Tastatur', () => {
         tastatur.bind('a+b', () => {
           reactedToKey = true;
         });
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keydown', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keydown', {
             code: 'KeyA'
           })
         );
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keydown', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keydown', {
             code: 'KeyB'
           })
         );
@@ -271,13 +289,13 @@ describe('Tastatur', () => {
         tastatur.bind('a+b', () => {
           reactedToAB = true;
         });
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keydown', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keydown', {
             code: 'KeyA'
           })
         );
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keydown', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keydown', {
             code: 'KeyB'
           })
         );
@@ -292,18 +310,18 @@ describe('Tastatur', () => {
         tastatur.bind('a+b', () => {
           reactedToKey = true;
         });
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keydown', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keydown', {
             code: 'KeyA'
           })
         );
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keyup', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keyup', {
             code: 'KeyA'
           })
         );
-        document.dispatchEvent(
-          new dom.window.KeyboardEvent('keydown', {
+        dom.document.dispatchEvent(
+          new dom.KeyboardEvent('keydown', {
             code: 'KeyB'
           })
         );
