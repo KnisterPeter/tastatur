@@ -35,7 +35,7 @@
     <div id="actual"></div>
   </div>
   <script type="text/javascript">
-    document.getElementById('inspect').addEventListener('keydown', e => {
+    document.getElementById('inspect').addEventListener('keydown', function(e) {
       if (e.code !== 'Tab') {
         e.preventDefault();
         e.stopPropagation();
@@ -68,8 +68,8 @@
       }
     ));
     tastatur.install(el);
-    bindings.forEach(binding => {
-      tastatur.bind(binding, e => {
+    bindings.forEach(function(binding) {
+      tastatur.bind(binding, function(e) {
         console.log(binding, e);
         actual.innerHTML = 'Pressed: ' + binding + ' (' + e.type + ')' + '<br />' + actual.innerHTML;
       });
