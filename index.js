@@ -177,7 +177,7 @@ var Tastatur = /** @class */ (function () {
             return e.code;
         }
         // ie/edge quirks
-        var key = e.key.toLowerCase();
+        var key = String.fromCharCode(e.keyCode);
         if (key in this.keymap) {
             return this.keymap[key];
         }
