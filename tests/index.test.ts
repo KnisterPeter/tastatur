@@ -1,28 +1,85 @@
 // tslint:disable:no-unused-expression
 import { expect } from 'chai';
+import 'core-js';
 import { JSDOM } from 'jsdom';
 
-import { Tastatur, KeyMap } from '../lib/index';
+import { Tastatur, KeyMap, Key } from '../lib/index';
 
 interface BrowserAccess {
   window: Window;
   document: Document;
-  KeyboardEvent: { new (typeArg: string, eventInitDict?: KeyboardEventInit): KeyboardEvent };
+  createKeyboardEvent(type: 'keydown' | 'keyup', code: Key): Event;
 }
 
-function createDOM(): BrowserAccess {
+type Browser = 'standard' | 'ie11';
+
+const isNode = typeof module !== 'undefined' && typeof process.env.NYC_CONFIG !== 'undefined';
+const isBrowser = typeof window !== 'undefined';
+const isIE11 = isBrowser
+  && !!(window as any).MSInputMethodContext
+  && !!(document as any).documentMode;
+
+const testSuite: Browser[] = isNode
+  ? ['standard', 'ie11']
+  : isIE11
+    ? ['ie11']
+    : ['standard'];
+
+function createDOM(browser: Browser = 'standard'): BrowserAccess {
+  // tslint:disable:object-literal-key-quotes
+  const IE11Map = {
+    'ctrlleft': 'Control',
+    'ctrlright': 'Control',
+    'shiftleft': 'Shift',
+    'shiftright': 'Shift',
+    'alt': 'Alt',
+    'esc': 'Esc',
+    'tab': 'Tab'
+  };
+  // tslint:enable:object-literal-key-quotes
   if (typeof window === 'undefined') {
     const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
+    if (browser === 'ie11') {
+      return {
+        window: dom.window,
+        document: dom.window.document,
+        createKeyboardEvent(type: 'keydown' | 'keyup', code: Key): Event {
+          return new dom.window.KeyboardEvent(type, {
+            key: (IE11Map as any)[code] || code,
+            keyCode: code.charCodeAt(0)
+          } as any);
+        }
+      };
+    }
     return {
       window: dom.window,
       document: dom.window.document,
-      KeyboardEvent: dom.window.KeyboardEvent
+      createKeyboardEvent(type: 'keydown' | 'keyup', code: Key): Event {
+        return new dom.window.KeyboardEvent(type, {
+          code: KeyMap[code]
+        });
+      }
+    };
+  }
+  if (browser === 'ie11') {
+    return {
+      window,
+      document: window.document,
+      createKeyboardEvent(type: 'keydown' | 'keyup', code: Key): Event {
+        const evt = document.createEvent('KeyboardEvent');
+        evt.initKeyboardEvent(type, true, true, window, (IE11Map as any)[code] || code, 0, '', false, '');
+        return evt;
+      }
     };
   }
   return {
     window,
     document: window.document,
-    KeyboardEvent
+    createKeyboardEvent(type: 'keydown' | 'keyup', code: Key): Event {
+      return new KeyboardEvent(type, {
+        code: KeyMap[code]
+      });
+    }
   };
 }
 
@@ -45,7 +102,7 @@ describe('Tastatur', () => {
     let dom!: BrowserAccess;
 
     beforeEach(() => {
-      dom = createDOM();
+      dom = createDOM(isIE11 ? 'ie11' : 'standard');
     });
 
     it('should setup keymapping z -> y (e.g. en -> de)', () => {
@@ -57,276 +114,260 @@ describe('Tastatur', () => {
         reactedToKey = true;
       });
       dom.document.dispatchEvent(
-        new dom.KeyboardEvent('keydown', {
-          code: 'KeyY'
-        })
+        dom.createKeyboardEvent('keydown', 'y')
       );
 
       expect(reactedToKey).to.be.true;
     });
   });
 
-  describe('when installed', () => {
-    let dom!: BrowserAccess;
+  testSuite.forEach(browser => {
+    describe(`when installed (${browser})`, () => {
+      let dom!: BrowserAccess;
 
-    beforeEach(() => {
-      dom = createDOM();
-      tastatur.install(dom.document);
-    });
+      beforeEach(() => {
+        dom = createDOM(browser as any);
+        tastatur.install(dom.document);
+      });
 
-    afterEach(() => {
-      tastatur.uninstall(dom.document);
-    });
+      afterEach(() => {
+        tastatur.uninstall(dom.document);
+      });
 
-    function testKey(binding: string, code: string): void {
-      try {
-        let reactedToKey = false;
+      function testKey(binding: string, code: Key): void {
+        try {
+          let reactedToKey = false;
 
-        tastatur.bind(binding, () => {
-          reactedToKey = true;
-        });
-        dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keydown', {
-            code
-          })
-        );
+          tastatur.bind(binding, () => {
+            reactedToKey = true;
+          });
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keydown', code)
+          );
 
-        expect(reactedToKey, `Failed to handle ${binding} -> ${code}`).to.be.true;
-      } finally {
-        tastatur.unbind(binding);
-        dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keyup', {
-            code
-          })
-        );
+          expect(reactedToKey, `Failed to handle ${binding} -> ${code}`).to.be.true;
+        } finally {
+          tastatur.unbind(binding);
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keyup', code)
+          );
+        }
       }
-    }
 
-    it('should respond to bound keys', () => {
-      testKey('a', 'KeyA');
-    });
-
-    it('should not respond to unbound keys', () => {
-      let reactedToKey = 0;
-
-      tastatur.bind('a', () => {
-        reactedToKey++;
+      it('should respond to bound keys', () => {
+        testKey('a', 'a');
       });
-      dom.document.dispatchEvent(
-        new dom.KeyboardEvent('keydown', {
-          code: 'KeyA'
-        })
-      );
-      tastatur.unbind('a');
-      dom.document.dispatchEvent(
-        new dom.KeyboardEvent('keydown', {
-          code: 'KeyA'
-        })
-      );
 
-      expect(reactedToKey).to.be.eq(1);
-    });
+      it('should not respond to unbound keys', () => {
+        let reactedToKey = 0;
 
-    it('should ignore unbound keys', () => {
-      let reactedToKey = false;
+        tastatur.bind('a', () => {
+          reactedToKey++;
+        });
+        dom.document.dispatchEvent(
+          dom.createKeyboardEvent('keydown', 'a')
+        );
+        tastatur.unbind('a');
+        dom.document.dispatchEvent(
+          dom.createKeyboardEvent('keydown', 'a')
+        );
 
-      tastatur.bind('a', () => {
-        reactedToKey = true;
+        expect(reactedToKey).to.be.eq(1);
       });
-      dom.document.dispatchEvent(
-        new dom.KeyboardEvent('keydown', {
-          code: 'KeyB'
-        })
-      );
 
-      expect(reactedToKey).to.be.false;
-    });
-
-    it('should respond to special keys', () => {
-      testKey('CtrlLeft', 'ControlLeft');
-      testKey('CtrlRight', 'ControlRight');
-      testKey('Ctrl', 'ControlRight');
-      testKey('Ctrl', 'ControlLeft');
-
-      testKey('ShiftLeft', 'ShiftLeft');
-      testKey('ShiftRight', 'ShiftRight');
-      testKey('Shift', 'ShiftRight');
-      testKey('Shift', 'ShiftLeft');
-
-      testKey('Alt', 'AltLeft');
-      testKey('AltGr', 'AltRight');
-
-      testKey('Esc', 'Escape');
-      testKey('CapsLock', 'CapsLock');
-      testKey('Tab', 'Tab');
-      testKey('Backquote', 'Backquote');
-      testKey('Minus', 'Minus');
-      testKey('Equal', 'Equal');
-      testKey('BracketLeft', 'BracketLeft');
-      testKey('BracketRigth', 'BracketRigth');
-      testKey('Semicolon', 'Semicolon');
-      testKey('Quote', 'Quote');
-      testKey('Backslash', 'Backslash');
-      testKey('Comma', 'Comma');
-      testKey('Period', 'Period');
-      testKey('Slash', 'Slash');
-      testKey('IntlBackslash', 'IntlBackslash');
-      testKey('ScrollLock', 'ScrollLock');
-      testKey('Pause', 'Pause');
-      testKey('Insert', 'Insert');
-      testKey('Home', 'Home');
-      testKey('PageUp', 'PageUp');
-      testKey('Delete', 'Delete');
-      testKey('End', 'End');
-      testKey('PageDown', 'PageDown');
-      testKey('ArrowLeft', 'ArrowLeft');
-      testKey('ArrowUp', 'ArrowUp');
-      testKey('ArrowRight', 'ArrowRight');
-      testKey('ArrowDown', 'ArrowDown');
-      testKey('BrowserBack', 'BrowserBack');
-      testKey('BrowserForward', 'BrowserForward');
-      testKey('BrowserFavorites', 'BrowserFavorites');
-      testKey('NumLock', 'NumLock');
-      testKey('NumpadDivide', 'NumpadDivide');
-      testKey('NumpadMultiply', 'NumpadMultiply');
-      testKey('NumpadSubtract', 'NumpadSubtract');
-      testKey('NumpadAdd', 'NumpadAdd');
-      testKey('NumpadEnter', 'NumpadEnter');
-      testKey('NumpadDecimal', 'NumpadDecimal');
-
-      testKey('F1', 'F1');
-      testKey('F2', 'F2');
-      testKey('F3', 'F3');
-      testKey('F4', 'F4');
-      testKey('F5', 'F5');
-      testKey('F6', 'F6');
-      testKey('F7', 'F7');
-      testKey('F8', 'F8');
-      testKey('F9', 'F9');
-      testKey('F10', 'F10');
-      testKey('F11', 'F11');
-      testKey('F12', 'F12');
-      testKey('F13', 'F13');
-      testKey('F14', 'F14');
-      testKey('F15', 'F15');
-      testKey('F16', 'F16');
-      testKey('F17', 'F17');
-      testKey('F18', 'F18');
-      testKey('F19', 'F19');
-      testKey('F20', 'F20');
-
-      testKey('Digit1', 'Digit1');
-      testKey('Digit2', 'Digit2');
-      testKey('Digit3', 'Digit3');
-      testKey('Digit4', 'Digit4');
-      testKey('Digit5', 'Digit5');
-      testKey('Digit6', 'Digit6');
-      testKey('Digit7', 'Digit7');
-      testKey('Digit8', 'Digit8');
-      testKey('Digit9', 'Digit9');
-      testKey('Digit0', 'Digit0');
-      testKey('Numpad1', 'Numpad1');
-      testKey('Numpad2', 'Numpad2');
-      testKey('Numpad3', 'Numpad3');
-      testKey('Numpad4', 'Numpad4');
-      testKey('Numpad5', 'Numpad5');
-      testKey('Numpad6', 'Numpad6');
-      testKey('Numpad7', 'Numpad7');
-      testKey('Numpad8', 'Numpad8');
-      testKey('Numpad9', 'Numpad9');
-      testKey('Numpad0', 'Numpad0');
-
-      testKey('1', 'Digit1');
-      testKey('2', 'Digit2');
-      testKey('3', 'Digit3');
-      testKey('4', 'Digit4');
-      testKey('5', 'Digit5');
-      testKey('6', 'Digit6');
-      testKey('7', 'Digit7');
-      testKey('8', 'Digit8');
-      testKey('9', 'Digit9');
-      testKey('0', 'Digit0');
-      testKey('1', 'Numpad1');
-      testKey('2', 'Numpad2');
-      testKey('3', 'Numpad3');
-      testKey('4', 'Numpad4');
-      testKey('5', 'Numpad5');
-      testKey('6', 'Numpad6');
-      testKey('7', 'Numpad7');
-      testKey('8', 'Numpad8');
-      testKey('9', 'Numpad9');
-      testKey('0', 'Numpad0');
-    });
-
-    describe('and bind combinations', () => {
-      it('should respond to it', () => {
+      it('should ignore unbound keys', () => {
         let reactedToKey = false;
 
-        tastatur.bind('a+b', () => {
+        tastatur.bind('a', () => {
           reactedToKey = true;
         });
         dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keydown', {
-            code: 'KeyA'
-          })
-        );
-        dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keydown', {
-            code: 'KeyB'
-          })
-        );
-
-        expect(reactedToKey).to.be.true;
-      });
-
-      it('should respond matching one', () => {
-        let reactedToB = false;
-        let reactedToAB = false;
-
-        tastatur.bind('b', () => {
-          reactedToB = true;
-        });
-        tastatur.bind('a+b', () => {
-          reactedToAB = true;
-        });
-        dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keydown', {
-            code: 'KeyA'
-          })
-        );
-        dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keydown', {
-            code: 'KeyB'
-          })
-        );
-
-        expect(reactedToB).to.be.false;
-        expect(reactedToAB).to.be.true;
-      });
-
-      it('should handle keyup state', () => {
-        let reactedToKey = false;
-
-        tastatur.bind('a+b', () => {
-          reactedToKey = true;
-        });
-        dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keydown', {
-            code: 'KeyA'
-          })
-        );
-        dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keyup', {
-            code: 'KeyA'
-          })
-        );
-        dom.document.dispatchEvent(
-          new dom.KeyboardEvent('keydown', {
-            code: 'KeyB'
-          })
+          dom.createKeyboardEvent('keydown', 'b')
         );
 
         expect(reactedToKey).to.be.false;
+      });
+
+      it('should respond to special keys', () => {
+        testKey('CtrlLeft', 'ctrlleft');
+        if (browser !== 'ie11') {
+          testKey('CtrlRight', 'ctrlright');
+        }
+        testKey('Ctrl', 'ctrlright');
+        testKey('Ctrl', 'ctrlleft');
+
+        testKey('ShiftLeft', 'shiftleft');
+        if (browser !== 'ie11') {
+          testKey('ShiftRight', 'shiftright');
+        }
+        testKey('Shift', 'shiftright');
+        testKey('Shift', 'shiftleft');
+
+        testKey('Alt', 'alt');
+        if (browser !== 'ie11') {
+          testKey('AltGr', 'altgr');
+        }
+
+        testKey('Esc', 'esc');
+        if (browser !== 'ie11') {
+          testKey('CapsLock', 'capslock');
+        }
+        testKey('Tab', 'tab');
+        testKey('Backquote', 'backquote');
+        testKey('Minus', 'minus');
+        testKey('Equal', 'equal');
+        testKey('BracketLeft', 'bracketleft');
+        testKey('BracketRigth', 'bracketrigth');
+        testKey('Semicolon', 'semicolon');
+        testKey('Quote', 'quote');
+        testKey('Backslash', 'backslash');
+        testKey('Comma', 'comma');
+        testKey('Period', 'period');
+        testKey('Slash', 'slash');
+        testKey('IntlBackslash', 'intlbackslash');
+        testKey('ScrollLock', 'scrolllock');
+        testKey('Pause', 'pause');
+        testKey('Insert', 'insert');
+        testKey('Home', 'home');
+        testKey('PageUp', 'pageup');
+        testKey('Delete', 'delete');
+        testKey('End', 'end');
+        testKey('PageDown', 'pagedown');
+        testKey('ArrowLeft', 'arrowleft');
+        testKey('ArrowUp', 'arrowup');
+        testKey('ArrowRight', 'arrowright');
+        testKey('ArrowDown', 'arrowdown');
+        testKey('BrowserBack', 'browserback');
+        testKey('BrowserForward', 'browserforward');
+        testKey('BrowserFavorites', 'browserfavorites');
+        testKey('NumLock', 'numlock');
+        testKey('NumpadDivide', 'numpaddivide');
+        testKey('NumpadMultiply', 'numpadmultiply');
+        testKey('NumpadSubtract', 'numpadsubtract');
+        testKey('NumpadAdd', 'numpadadd');
+        testKey('NumpadEnter', 'numpadenter');
+        testKey('NumpadDecimal', 'numpaddecimal');
+
+        testKey('F1', 'f1');
+        testKey('F2', 'f2');
+        testKey('F3', 'f3');
+        testKey('F4', 'f4');
+        testKey('F5', 'f5');
+        testKey('F6', 'f6');
+        testKey('F7', 'f7');
+        testKey('F8', 'f8');
+        testKey('F9', 'f9');
+        testKey('F10', 'f10');
+        testKey('F11', 'f11');
+        testKey('F12', 'f12');
+        testKey('F13', 'f13');
+        testKey('F14', 'f14');
+        testKey('F15', 'f15');
+        testKey('F16', 'f16');
+        testKey('F17', 'f17');
+        testKey('F18', 'f18');
+        testKey('F19', 'f19');
+        testKey('F20', 'f20');
+
+        testKey('Digit1', 'digit1');
+        testKey('Digit2', 'digit2');
+        testKey('Digit3', 'digit3');
+        testKey('Digit4', 'digit4');
+        testKey('Digit5', 'digit5');
+        testKey('Digit6', 'digit6');
+        testKey('Digit7', 'digit7');
+        testKey('Digit8', 'digit8');
+        testKey('Digit9', 'digit9');
+        testKey('Digit0', 'digit0');
+        testKey('Numpad1', 'numpad1');
+        testKey('Numpad2', 'numpad2');
+        testKey('Numpad3', 'numpad3');
+        testKey('Numpad4', 'numpad4');
+        testKey('Numpad5', 'numpad5');
+        testKey('Numpad6', 'numpad6');
+        testKey('Numpad7', 'numpad7');
+        testKey('Numpad8', 'numpad8');
+        testKey('Numpad9', 'numpad9');
+        testKey('Numpad0', 'numpad0');
+
+        testKey('1', 'digit1');
+        testKey('2', 'digit2');
+        testKey('3', 'digit3');
+        testKey('4', 'digit4');
+        testKey('5', 'digit5');
+        testKey('6', 'digit6');
+        testKey('7', 'digit7');
+        testKey('8', 'digit8');
+        testKey('9', 'digit9');
+        testKey('0', 'digit0');
+        testKey('1', 'numpad1');
+        testKey('2', 'numpad2');
+        testKey('3', 'numpad3');
+        testKey('4', 'numpad4');
+        testKey('5', 'numpad5');
+        testKey('6', 'numpad6');
+        testKey('7', 'numpad7');
+        testKey('8', 'numpad8');
+        testKey('9', 'numpad9');
+        testKey('0', 'numpad0');
+      });
+
+      describe('and bind combinations', () => {
+        it('should respond to it', () => {
+          let reactedToKey = false;
+
+          tastatur.bind('a+b', () => {
+            reactedToKey = true;
+          });
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keydown', 'a')
+          );
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keydown', 'b')
+          );
+
+          expect(reactedToKey).to.be.true;
+        });
+
+        it('should respond matching one', () => {
+          let reactedToB = false;
+          let reactedToAB = false;
+
+          tastatur.bind('b', () => {
+            reactedToB = true;
+          });
+          tastatur.bind('a+b', () => {
+            reactedToAB = true;
+          });
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keydown', 'a')
+          );
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keydown', 'b')
+          );
+
+          expect(reactedToB).to.be.false;
+          expect(reactedToAB).to.be.true;
+        });
+
+        it('should handle keyup state', () => {
+          let reactedToKey = false;
+
+          tastatur.bind('a+b', () => {
+            reactedToKey = true;
+          });
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keydown', 'a')
+          );
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keyup', 'a')
+          );
+          dom.document.dispatchEvent(
+            dom.createKeyboardEvent('keydown', 'b')
+          );
+
+          expect(reactedToKey).to.be.false;
+        });
       });
     });
   });

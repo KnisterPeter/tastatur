@@ -35,17 +35,18 @@
     <div id="actual"></div>
   </div>
   <script type="text/javascript">
-    document.getElementById('inspect').addEventListener('keydown', e => {
+    document.getElementById('inspect').addEventListener('keydown', function(e) {
       if (e.code !== 'Tab') {
         e.preventDefault();
         e.stopPropagation();
       }
-      console.log(e.code, e);
+      console.log(e.code, e.key, e);
     });
   </script>
   <script type="text/javascript">
     exports = {};
   </script>
+  <script src="../node_modules/core-js/client/core.js"></script>
   <script src="../dist/lib/index.js"></script>
   <script type="text/javascript">
     const bindings = [
@@ -59,14 +60,17 @@
     const el = document.getElementById('bindings');
     el.innerHTML += bindings.join('<br />')
 
-    const tastatur = new exports.Tastatur({
-      ...exports.KeyMap,
-      y: 'KeyZ',
-      z: 'KeyY',
-    });
+    const tastatur = new exports.Tastatur(Object.assign(
+      {},
+      exports.KeyMap,
+      {
+        y: 'KeyZ',
+        z: 'KeyY'
+      }
+    ));
     tastatur.install(el);
-    bindings.forEach(binding => {
-      tastatur.bind(binding, e => {
+    bindings.forEach(function(binding) {
+      tastatur.bind(binding, function(e) {
         console.log(binding, e);
         actual.innerHTML = 'Pressed: ' + binding + ' (' + e.type + ')' + '<br />' + actual.innerHTML;
       });

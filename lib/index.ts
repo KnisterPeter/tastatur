@@ -119,6 +119,13 @@ export const KeyMap = {
   'y': 'KeyY',
   'z': 'KeyZ'
 };
+export type Key = keyof typeof KeyMap;
+
+const EdgeSpecialMap = {
+  'control': 'ControlLeft',
+  'shift': 'ShiftLeft',
+  'alt': 'AltLeft'
+};
 // tslint:enable:object-literal-key-quotes
 
 export class Tastatur {
@@ -161,7 +168,6 @@ export class Tastatur {
     if (key.toLowerCase() in this.keymap) {
       return this.keymap[key.toLowerCase() as keyof typeof KeyMap];
     }
-    // tslint:disable-next-line:cyclomatic-complexity
     switch (key.toLowerCase()) {
       case 'ctrl':
         return [this.keymap.ctrlleft, this.keymap.ctrlright];
@@ -178,19 +184,47 @@ export class Tastatur {
       case '9':
       case '0':
         return [`Digit${key}`, `Numpad${key}`];
-      }
+    }
     throw new Error(`Unsupported key '${key}'`);
   }
 
-  // private mapKey(key: string): string {
-  //   return this.keymap ? this.keymap[key] || key : key;
-  // }
+  private mapKeyCode(e: KeyboardEvent): string {
+    if (e.code) {
+      return e.code;
+    }
+    // ie/edge quirks
+    if (e.key.toLowerCase() in EdgeSpecialMap) {
+      return EdgeSpecialMap[e.key.toLowerCase() as keyof typeof EdgeSpecialMap];
+    }
+    if (e.key.toLowerCase() in this.keymap) {
+      return this.keymap[e.key.toLowerCase() as keyof typeof KeyMap];
+    }
+    const key = String.fromCharCode(e.keyCode);
+    const lkey = key.toLowerCase();
+    if (lkey in this.keymap) {
+      return this.keymap[lkey as keyof typeof KeyMap];
+    }
+    switch (key) {
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '0':
+        return `Digit${key}`;
+    }
+    throw new Error(`Unsupported key '${e.key}'`);
+  }
 
   public handleKey(e: KeyboardEvent): void {
     if (e.type === 'keydown') {
-      this.pressed[e.code] = true;
+      this.pressed[this.mapKeyCode(e)] = true;
     } else if (e.type === 'keyup') {
-      this.pressed[e.code] = false;
+      this.pressed[this.mapKeyCode(e)] = false;
     }
     const registration = this.registrations.find(registration => {
       const required = this.areRequiredKeysPressed(registration);

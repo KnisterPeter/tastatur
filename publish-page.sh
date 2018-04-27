@@ -1,26 +1,22 @@
 #!/bin/sh
 
-# clone
-git clone git@github.com:KnisterPeter/tastatur.git page
-cd page
-
 # build
 yarn
 yarn build
 
 # prepare
-git clone git@github.com:KnisterPeter/tastatur.git page
-cd page
-git checkout gh-pages
-cd ..
-cat tests/dev.html |sed -e 's/src="\.\.\/dist\/lib\/index.js"/src="index.js"/' > page/index.html
-cp dist/lib/index.js page/index.js
-cd page
+git clone -b gh-pages git@github.com:KnisterPeter/tastatur.git __page
+cat tests/dev.html |sed \
+  -e 's/src="\.\.\/dist\/lib\/index.js"/src="index.js"/' \
+  -e 's/src="\.\.\/node_modules\/core-js\/client\/core\.js"/src="core.js"/' \
+  > __page/index.html
+cp node_modules/core-js/client/core.js __page/core.js
+cp dist/lib/index.js __page/index.js
+cd __page
 git add .
 git commit -m "Update page"
 git push -f origin gh-pages
 cd ..
 
 # cleanup
-cd ..
-rm -rf page
+rm -rf __page

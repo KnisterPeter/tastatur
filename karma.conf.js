@@ -13,24 +13,12 @@ const browsers = {
     platform: 'OS X 10.13',
     version: '11'
   },
-  // slIE11: {
-  //   base: 'SauceLabs',
-  //   browserName: 'internet explorer',
-  //   platform: 'Windows 7',
-  //   version: '11'
-  // },
-  // slEdge13: {
-  //   base: 'SauceLabs',
-  //   browserName: 'MicrosoftEdge',
-  //   version: '13',
-  //   platform: 'Windows 10'
-  // },
-  // slEdge14: {
-  //   base: 'SauceLabs',
-  //   browserName: 'MicrosoftEdge',
-  //   version: '14',
-  //   platform: 'Windows 10'
-  // },
+  slIE11: {
+    base: 'SauceLabs',
+    browserName: 'internet explorer',
+    platform: 'Windows 7',
+    version: '11'
+  },
   // slEdge15: {
   //   base: 'SauceLabs',
   //   browserName: 'MicrosoftEdge',
@@ -57,9 +45,10 @@ module.exports = function(config) {
     basePath: '',
     frameworks: ['mocha', 'chai'],
     files: [
+      '../node_modules/jspolyfill-array.prototype.find/find.js',
       'dist/tests/browser.js',
     ],
-    reporters: ['saucelabs'],
+    reporters: ['mocha', 'saucelabs'],
     port: 9876,
     colors: true,
     singleRun: true,
