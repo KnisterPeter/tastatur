@@ -115,6 +115,11 @@ exports.KeyMap = {
     'y': 'KeyY',
     'z': 'KeyZ'
 };
+var EdgeSpecialMap = {
+    'control': 'ctrlleft',
+    'shift': 'shiftleft',
+    'alt': 'alt'
+};
 // tslint:enable:object-literal-key-quotes
 var Tastatur = /** @class */ (function () {
     function Tastatur(keymap) {
@@ -152,7 +157,6 @@ var Tastatur = /** @class */ (function () {
         if (key.toLowerCase() in this.keymap) {
             return this.keymap[key.toLowerCase()];
         }
-        // tslint:disable-next-line:cyclomatic-complexity
         switch (key.toLowerCase()) {
             case 'ctrl':
                 return [this.keymap.ctrlleft, this.keymap.ctrlright];
@@ -177,16 +181,14 @@ var Tastatur = /** @class */ (function () {
             return e.code;
         }
         // ie/edge quirks
+        if (e.key.toLowerCase() in EdgeSpecialMap) {
+            return EdgeSpecialMap[e.key.toLowerCase()];
+        }
         var key = String.fromCharCode(e.keyCode).toLowerCase();
         if (key in this.keymap) {
             return this.keymap[key];
         }
-        // tslint:disable-next-line:cyclomatic-complexity
         switch (key) {
-            case 'ctrl':
-                return 'ctrlleft';
-            case 'shift':
-                return 'shiftleft';
             case '1':
             case '2':
             case '3':
