@@ -184,9 +184,9 @@ var Tastatur = /** @class */ (function () {
         // tslint:disable-next-line:cyclomatic-complexity
         switch (key) {
             case 'ctrl':
-                return this.keymap.ctrlleft;
+                return 'ctrlleft';
             case 'shift':
-                return this.keymap.shiftleft;
+                return 'shiftleft';
             case '1':
             case '2':
             case '3':
