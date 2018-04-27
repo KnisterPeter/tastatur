@@ -59,11 +59,14 @@
     const el = document.getElementById('bindings');
     el.innerHTML += bindings.join('<br />')
 
-    const tastatur = new exports.Tastatur({
-      ...exports.KeyMap,
-      y: 'KeyZ',
-      z: 'KeyY',
-    });
+    const tastatur = new exports.Tastatur(Object.assign(
+      {},
+      exports.KeyMap,
+      {
+        y: 'KeyZ',
+        z: 'KeyY',
+      }
+    ));
     tastatur.install(el);
     bindings.forEach(binding => {
       tastatur.bind(binding, e => {
