@@ -172,16 +172,38 @@ var Tastatur = /** @class */ (function () {
         }
         throw new Error("Unsupported key '" + key + "'");
     };
-    // private mapKey(key: string): string {
-    //   return this.keymap ? this.keymap[key] || key : key;
-    // }
+    Tastatur.prototype.mapKeyCode = function (e) {
+        if (e.code) {
+            return e.code;
+        }
+        // ie/edge quirks
+        // tslint:disable-next-line:cyclomatic-complexity
+        switch (e.key.toLowerCase()) {
+            case 'ctrl':
+                return this.keymap.ctrlleft;
+            case 'shift':
+                return this.keymap.shiftleft;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '0':
+                return "Digit" + e.key;
+        }
+        throw new Error("Unsupported key '" + e.key + "'");
+    };
     Tastatur.prototype.handleKey = function (e) {
         var _this = this;
         if (e.type === 'keydown') {
-            this.pressed[e.code] = true;
+            this.pressed[this.mapKeyCode(e)] = true;
         }
         else if (e.type === 'keyup') {
-            this.pressed[e.code] = false;
+            this.pressed[this.mapKeyCode(e)] = false;
         }
         var registration = this.registrations.find(function (registration) {
             var required = _this.areRequiredKeysPressed(registration);
