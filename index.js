@@ -116,7 +116,7 @@ exports.KeyMap = {
     'z': 'KeyZ'
 };
 var EdgeSpecialMap = {
-    'control': 'CtrlLeft',
+    'control': 'ControlLeft',
     'shift': 'ShiftLeft',
     'alt': 'Alt'
 };
