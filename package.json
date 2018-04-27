@@ -25,10 +25,11 @@
     "test:browser": "webpack --config ./tests/webpack.config.js && karma start",
     "prerelease": "git checkout master && git pull origin master && npm test && npm run build",
     "release": "standard-version",
-    "postrelease": "git push --follow-tags origin master && npm publish",
+    "postrelease": "git push --follow-tags origin master && npm publish && npm run publish:page",
     "precoverage": "npm run clean && tsc --inlineSourceMap --module commonjs --outDir dist",
     "coverage": "nyc report --reporter=lcov && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-    "build:watch": "npm run build:cjs -- --watch"
+    "build:watch": "npm run build:cjs -- --watch",
+    "publish:page": "sh ./publish-page.sh"
   },
   "author": {
     "name": "Markus Wolf",
