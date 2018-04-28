@@ -60,10 +60,14 @@
     const el = document.getElementById('bindings');
     el.innerHTML += bindings.join('<br />')
 
-    const clone = JSON.parse(JSON.stringify(exports.KeyMap));
-    clone.y = 'KeyZ';
-    clone.z = 'KeyY';
-    const tastatur = new exports.Tastatur(clone);
+    const tastatur = new exports.Tastatur(Object.assign(
+      {},
+      exports.KeyMap,
+      {
+        y: 'KeyZ',
+        z: 'KeyY'
+      }
+    ));
     tastatur.install(el);
     bindings.forEach(function(binding) {
       tastatur.bind(binding, function(e) {
