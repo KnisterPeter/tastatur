@@ -118,7 +118,7 @@ exports.KeyMap = {
 var EdgeSpecialMap = {
     'control': 'ControlLeft',
     'shift': 'ShiftLeft',
-    'alt': 'Alt'
+    'alt': 'AltLeft'
 };
 // tslint:enable:object-literal-key-quotes
 var Tastatur = /** @class */ (function () {
@@ -183,6 +183,9 @@ var Tastatur = /** @class */ (function () {
         // ie/edge quirks
         if (e.key.toLowerCase() in EdgeSpecialMap) {
             return EdgeSpecialMap[e.key.toLowerCase()];
+        }
+        if (e.key.toLowerCase() in this.keymap) {
+            return this.keymap[e.key.toLowerCase()];
         }
         var key = String.fromCharCode(e.keyCode);
         var lkey = key.toLowerCase();
