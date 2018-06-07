@@ -122,9 +122,9 @@ export const KeyMap = {
 // tslint:enable:object-literal-key-quotes
 
 export class Tastatur {
-  private registrations: Registration[] = [];
-  private pressed: { [key: string]: boolean } = {};
-  private keymap: typeof KeyMap;
+  private readonly registrations: Registration[] = [];
+  private readonly pressed: { [key: string]: boolean } = {};
+  private readonly keymap: typeof KeyMap;
 
   constructor(keymap = KeyMap) {
     this.keymap = keymap;
