@@ -1,4 +1,4 @@
-// tslint:disable:no-unused-expression
+// tslint:disable:no-unused-expression no-implicit-dependencies
 import { expect } from 'chai';
 import { JSDOM } from 'jsdom';
 
