@@ -108,9 +108,9 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
 
-"@types/jsdom@11.0.6":
-  version "11.0.6"
-  resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-11.0.6.tgz#20d6e8c83f15fef0b40c39b3faebe8bc7587d86e"
+"@types/jsdom@11.12.0":
+  version "11.12.0"
+  resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-11.12.0.tgz#00ddc6f0a1b04c2f5ff6fb23eb59360ca65f12ae"
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
