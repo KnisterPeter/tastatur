@@ -1,5 +1,17 @@
 {
   "extends": [
     "config:base"
+  ],
+  "semanticPrefix": "chore:",
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "packagePatterns": [
+        "^@types/"
+      ],
+      "automerge": true
+    }
   ]
 }
