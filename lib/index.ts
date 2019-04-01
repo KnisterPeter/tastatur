@@ -218,9 +218,8 @@ export class Tastatur {
     return registration.keys.reduce((result, key) => {
       if (Array.isArray(key)) {
         return result && key.some(key => this.pressed[key]);
-      } else {
-        return result && this.pressed[key];
       }
-    }, true);
+      return result && this.pressed[key];
+    }, true as boolean);
   }
 }
