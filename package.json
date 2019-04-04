@@ -48,7 +48,7 @@
     "chai": "4.2.0",
     "codecov": "3.3.0",
     "coveralls": "3.0.3",
-    "jest": "24.7.0",
+    "jest": "24.7.1",
     "jsdom": "14.0.0",
     "karma": "4.0.1",
     "karma-chai": "0.1.0",
