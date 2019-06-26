@@ -43,7 +43,7 @@
   "devDependencies": {
     "@knisterpeter/standard-tslint": "1.7.2",
     "@types/chai": "4.1.7",
-    "@types/jsdom": "12.2.3",
+    "@types/jsdom": "12.2.4",
     "@types/mocha": "5.2.7",
     "chai": "4.2.0",
     "codecov": "3.5.0",
