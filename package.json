@@ -60,7 +60,7 @@
     "source-map-support": "0.5.13",
     "standard-version": "7.0.0",
     "ts-jest": "24.0.2",
-    "ts-loader": "6.0.4",
+    "ts-loader": "6.1.0",
     "tslint": "5.20.0",
     "typescript": "3.6.2",
     "webpack": "4.39.3",
