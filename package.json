@@ -46,7 +46,7 @@
     "@types/jsdom": "12.2.4",
     "@types/mocha": "5.2.7",
     "chai": "4.2.0",
-    "codecov": "3.5.0",
+    "codecov": "3.6.0",
     "coveralls": "3.0.6",
     "jest": "24.9.0",
     "jsdom": "15.1.1",
