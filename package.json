@@ -57,7 +57,7 @@
     "mocha": "6.2.2",
     "nyc": "14.1.1",
     "rimraf": "3.0.0",
-    "source-map-support": "0.5.13",
+    "source-map-support": "0.5.15",
     "standard-version": "7.0.0",
     "ts-jest": "24.1.0",
     "ts-loader": "6.2.1",
