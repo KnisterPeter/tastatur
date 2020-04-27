@@ -61,7 +61,7 @@
     "standard-version": "7.1.0",
     "ts-jest": "25.4.0",
     "ts-loader": "7.0.1",
-    "tslint": "6.1.1",
+    "tslint": "6.1.2",
     "typescript": "3.8.3",
     "webpack": "4.43.0",
     "webpack-cli": "3.3.11",
