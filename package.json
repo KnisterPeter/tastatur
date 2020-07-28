@@ -50,7 +50,7 @@
     "coveralls": "3.1.0",
     "jest": "26.1.0",
     "jsdom": "16.1.0",
-    "karma": "5.1.0",
+    "karma": "5.1.1",
     "karma-chai": "0.1.0",
     "karma-mocha": "2.0.1",
     "karma-sauce-launcher": "4.1.4",
