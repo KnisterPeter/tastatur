@@ -44,7 +44,7 @@
     "@knisterpeter/standard-tslint": "1.7.2",
     "@types/chai": "4.2.12",
     "@types/jsdom": "12.2.4",
-    "@types/mocha": "8.0.0",
+    "@types/mocha": "8.0.1",
     "chai": "4.2.0",
     "codecov": "3.7.2",
     "coveralls": "3.1.0",
