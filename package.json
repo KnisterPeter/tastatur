@@ -68,7 +68,7 @@
     "webpack-node-externals": "2.5.2"
   },
   "dependencies": {
-    "tslib": "2.0.2"
+    "tslib": "2.0.3"
   },
   "nyc": {
     "exclude": [
