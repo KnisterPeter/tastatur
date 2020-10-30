@@ -3856,7 +3856,7 @@ glob@7.1.6, glob@^7.0.0, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, glo
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-global-agent@^2.1.8:
+global-agent@^2.1.12:
   version "2.1.12"
   resolved "https://registry.yarnpkg.com/global-agent/-/global-agent-2.1.12.tgz#e4ae3812b731a9e81cbf825f9377ef450a8e4195"
   integrity sha512-caAljRMS/qcDo69X9BfkgrihGUgGx44Fb4QQToNQjsiWh+YlQ66uqYVAdA8Olqit+5Ng0nkz09je3ZzANMZcjg==
@@ -5220,15 +5220,15 @@ karma-mocha@2.0.1:
   dependencies:
     minimist "^1.2.3"
 
-karma-sauce-launcher@4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/karma-sauce-launcher/-/karma-sauce-launcher-4.3.1.tgz#372df12da03fda5afe062a7dd753f048190b5c18"
-  integrity sha512-Cq73QPfl/tBBm2pki1LUGQc84QGPR1jNyTjBOuAziFLBYoVRcX8hj+kdShc8kQ36l6roChI4Eonmyk79VH14xQ==
+karma-sauce-launcher@4.3.3:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/karma-sauce-launcher/-/karma-sauce-launcher-4.3.3.tgz#ae92cd4d8d0147f6d0b8f3f9558785aaecbc65fa"
+  integrity sha512-t9t4RYGXKF1md3EutXb59r4gWOFi67jfUDHdfEssSXsjNlmMZ43qGFupUFbpBO6iebSbwf+KqLcwhDx/bxzbuQ==
   dependencies:
     fs-extra "^9.0.1"
-    global-agent "^2.1.8"
+    global-agent "^2.1.12"
     saucelabs "^4.5.1"
-    webdriverio "^6.1.9"
+    webdriverio "^6.7.0"
 
 karma@5.2.3:
   version "5.2.3"
@@ -8659,7 +8659,7 @@ webdriver@6.7.0:
     got "^11.0.2"
     lodash.merge "^4.6.1"
 
-webdriverio@^6.1.9:
+webdriverio@^6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-6.7.0.tgz#41001775608b83a93172d43b3f61dc298daf8869"
   integrity sha512-B9jmtHEa8Di/db/MxIIf7kD5uopbgtUdKzgYRIt4Wq6edAOfq9rwV7Jz8yJfD7dJdAOD4GQGXEkFLmxEqPqMZQ==
