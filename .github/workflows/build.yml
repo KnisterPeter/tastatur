@@ -39,4 +39,7 @@ jobs:
       - run: yarn
       - run: yarn linter
       - run: yarn test && yarn test:browser
+        env:
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
       - run: yarn coverage
