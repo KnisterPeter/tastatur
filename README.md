@@ -11,6 +11,10 @@ input and keyboard handling in javascript.
 
 [![Build Status](https://saucelabs.com/browser-matrix/KnisterPeter.svg)](https://saucelabs.com/beta/builds/88c196f5bd4b4ed296c1419798d66af3)
 
+# DEPRECATED
+
+tastatur is not maintained any longer
+
 # Usage
 
 ## Installation
